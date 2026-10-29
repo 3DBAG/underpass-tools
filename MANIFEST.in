@@ -1,0 +1,2 @@
+include LICENSE PROVENANCE.json
+recursive-include native *.zig *.zon *.cpp *.h *.nix *.lock

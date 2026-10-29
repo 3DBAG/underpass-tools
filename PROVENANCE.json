@@ -1,0 +1,33 @@
+{
+  "source_repository": "https://github.com/3DBAG/underpass-detection-experiments",
+  "source_commit": "f6d9633e02406ab62901e10f0bd64880b343d50c",
+  "version": "0.1.0",
+  "note": "Extracted working-tree sources; file hashes identify the actual imported content.",
+  "files": {
+    "height_from_streetlidar/height_estimation.py": "c20cca1180b1977f505dbc4e2816207eb4b04b8816ee958f554355aaf4eacf25",
+    "crop_las_by_polygons/scripts/crop_las_by_polygons.py": "4853fcd2c99ae6e46047648b6dffc8a471ffe7b8eaa32fdc8d095a2b0b49a9b8",
+    "modelling_3d/src/BooleanObjWriter.cpp": "e0270249a201f44d0477c294c0a72db55ca8f619860f7e90b67fa6a583a46b67",
+    "modelling_3d/src/BooleanObjWriter.h": "874b2a362ca439addbd9ffc80055dc78a5daf698b02802d2039dec8d7763f34e",
+    "modelling_3d/src/BooleanOps.h": "d7f134f6228003b9c3b0eefd6c50c73d8a570426fa92f8dfdaa212da28d1db65",
+    "modelling_3d/src/BooleanOpsGeogram.cpp": "b2d5bb1c80c7983e98b18d7dbbe0821b08223abd4e90bb9f44a4d8f610ea8a31",
+    "modelling_3d/src/BooleanOpsManifold.cpp": "dda0530e97693956512b14aa50a4545fabfc8f9364d62789f5780d5974c82ee7",
+    "modelling_3d/src/BooleanOpsManifold.h": "04d587d05096833afe815c5f359b94a105fd1579e21c70011e0292a02559db13",
+    "modelling_3d/src/BooleanOpsNef.cpp": "4bac6be52bf13a334a86ed7236dc7c4c0b5f899ca7fdbd82d9d95038d69c9414",
+    "modelling_3d/src/BooleanOpsPMP.cpp": "0bab1072a418f73382974248461e2a1e769a56031731666556c6f825a8a70007",
+    "modelling_3d/src/CdtDomainMarking.h": "fb8c810eb1517f76ed00e53509e5e5e089a87bfb235bce746faaf497c0841109",
+    "modelling_3d/src/MeshConversion.cpp": "6f3a1e7e5b39f8f3544feb17fa7b0a57155ba0327f99f28cc051d36a070a974c",
+    "modelling_3d/src/MeshConversion.h": "530c7682963a944caa0eedc48fe7ae33aa0cc56b9cce3d5cc5cd6a9667378ed1",
+    "modelling_3d/src/MeshProcessingConfig.h": "e78b9ed6f7109e4c62bd20494c266bed33b1d4ebed250d189631c3d3d50a74a1",
+    "modelling_3d/src/ModelLoaders.cpp": "e2216da2bfe7f0207a9dc130088031382e7f969395f1d7b156fef58d97dfa9d0",
+    "modelling_3d/src/ModelLoaders.h": "2259f3a40b6cecb644056c607ee2e5d4aef473dbc5d9148c11bdd91ada953518",
+    "modelling_3d/src/OGRVectorReader.cpp": "1e820081b6fdeb5c1c841718298d1e7c5b37a2442a2533815c1f9e58b88ab8f0",
+    "modelling_3d/src/OGRVectorReader.h": "286d49bb6eb8c8428d6c7046d3bc61713380776a1d5166cbc21ae61271fedbd6",
+    "modelling_3d/src/PolygonExtruder.cpp": "de2125a81e10678fbb426a49bd447ea0711d41a5b893849e74a957faeed95be2",
+    "modelling_3d/src/PolygonExtruder.h": "f6288563805e8a7f1137ed4bee1a4116756c76ac0a261ae26838468f7f706a52",
+    "modelling_3d/src/PolygonalOutput.cpp": "c4ee00f85489521f547d453c8defd8951659f00baa1f9ca3d6747976c0ec7dd6",
+    "modelling_3d/src/PolygonalOutput.h": "5cca8875bfc16be4c37bc0847b66ff391a77a52f7660984a975d2313d2515b3b",
+    "modelling_3d/src/RerunVisualization.cpp": "fa4e60acc0247889aa509887756950d2d496e2a9693e6bb14b16f76e76621f74",
+    "modelling_3d/src/RerunVisualization.h": "d948cea9943cc09cdaec02b8dd3e5aaf53bfd1de7d7574cc7742701ff501eeb1",
+    "modelling_3d/src/main.cpp": "f48cb23ca262a3636190dd010779e4a23b899f316f293aa0dca0c5f6a30c4bbe"
+  }
+}

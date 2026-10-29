@@ -1,0 +1,11 @@
+build/
+dist/
+*.egg-info/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.venv/
+.zig-cache/
+.zig-global-cache/
+zig-out/
+result
