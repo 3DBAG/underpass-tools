@@ -1,0 +1,10 @@
+{
+  "source_repository": "https://github.com/3DBAG/underpass-detection-experiments",
+  "source_commit": "f6d9633e02406ab62901e10f0bd64880b343d50c",
+  "version": "0.2.0",
+  "note": "Extracted working-tree sources; file hashes identify the actual imported content.",
+  "files": {
+    "height_from_streetlidar/height_estimation.py": "c20cca1180b1977f505dbc4e2816207eb4b04b8816ee958f554355aaf4eacf25",
+    "crop_las_by_polygons/scripts/crop_las_by_polygons.py": "4853fcd2c99ae6e46047648b6dffc8a471ffe7b8eaa32fdc8d095a2b0b49a9b8"
+  }
+}
