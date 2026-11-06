@@ -8,6 +8,7 @@ from pathlib import Path
 
 from setuptools import Distribution, setup
 from setuptools.command.build_py import build_py
+from wheel.bdist_wheel import bdist_wheel
 
 
 class BuildPy(build_py):
@@ -44,4 +45,14 @@ class BinaryDistribution(Distribution):
         return True
 
 
-setup(cmdclass={"build_py": BuildPy}, distclass=BinaryDistribution)
+class BinaryWheel(bdist_wheel):
+    def get_tag(self):
+        # ctypes loads a C ABI library; no CPython-specific extension is built.
+        _, _, platform = super().get_tag()
+        return "py3", "none", platform
+
+
+setup(
+    cmdclass={"build_py": BuildPy, "bdist_wheel": BinaryWheel},
+    distclass=BinaryDistribution,
+)
