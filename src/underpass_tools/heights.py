@@ -3,14 +3,22 @@
 import math
 import multiprocessing
 import os
+from collections.abc import Sequence
 from concurrent.futures import FIRST_COMPLETED, ProcessPoolExecutor, wait
 from dataclasses import dataclass
 from pathlib import Path
 from types import SimpleNamespace
 
 from .lidar import HeightResult as HeightResult
+from .lidar import (
+    TileIndex,
+    load_tile_index,
+    null_result,
+    process_batch,
+    spatial_batches,
+)
+from .lidar import TileRecord as TileRecord
 from .lidar import UnderpassRecord as UnderpassRecord
-from .lidar import load_tile_index, null_result, process_batch, spatial_batches
 from .terrain import terrain_sampler
 
 
@@ -70,11 +78,15 @@ _index = None
 _args = None
 
 
-def _init_worker(settings, rasters):
+def _init_worker(settings, rasters, tiles=None):
     global _index, _args
     os.environ["RAYON_NUM_THREADS"] = str(settings.rayon_threads)
-    _index = load_tile_index(
-        Path(settings.index), Path(settings.pointcloud_root), settings.index_layer
+    _index = (
+        TileIndex(list(tiles))
+        if tiles is not None
+        else load_tile_index(
+            Path(settings.index), Path(settings.pointcloud_root), settings.index_layer
+        )
     )
     _args = SimpleNamespace(
         **settings.__dict__,
@@ -93,35 +105,58 @@ def _process(batch):
     return process_batch(batch.records, _index, _args)[0]
 
 
-def estimate_heights(records, rasters, settings=HeightSettings()):
+def estimate_heights(
+    records,
+    rasters,
+    settings=HeightSettings(),
+    *,
+    tiles: Sequence[TileRecord] | None = None,
+):
     """Yield batches of results, including rows outside lidar/terrain coverage.
 
     Lidar XYZ and terrain elevations must both use NAP. Input failures raise;
     expected per-polygon sampling failures return explicit nullable results.
+    ``tiles`` supplies a caller-owned catalog snapshot, including an empty one.
+    It is mutually exclusive with the legacy file-index settings. Workers build
+    their own spatial indexes; database access stays with the caller.
     """
     rasters = tuple(map(str, rasters))
     terrain_sampler(rasters)  # Fail before creating workers for corrupt inputs.
-    if settings.index is None:
+    if tiles is not None and settings.index is not None:
+        raise ValueError("Supply tile records or a file index, not both")
+    if tiles is not None:
+        tiles = tuple(tiles)
+        for tile in tiles:
+            if not Path(tile.path).is_file():
+                raise FileNotFoundError(f"Street-lidar tile is missing: {tile.path}")
+            if (
+                tile.geometry is None
+                or tile.geometry.is_empty
+                or not tile.geometry.is_valid
+            ):
+                raise ValueError(f"Invalid street-lidar tile geometry: {tile.path}")
+    if (tiles is None and settings.index is None) or tiles == ():
         for start in range(0, len(records), settings.batch_size):
             yield [
                 null_result(r, "no_laz_tiles", 0, 0, "No street lidar configured")
                 for r in records[start : start + settings.batch_size]
             ]
         return
-    if (
+    if tiles is None and (
         not Path(settings.index).is_file()
         or not Path(settings.pointcloud_root).is_dir()
     ):
         raise FileNotFoundError("Configured street-lidar index/root is missing")
     # Validate in the parent so bad input doesn't look like a worker failure.
-    load_tile_index(
-        Path(settings.index), Path(settings.pointcloud_root), settings.index_layer
-    )
+    if tiles is None:
+        load_tile_index(
+            Path(settings.index), Path(settings.pointcloud_root), settings.index_layer
+        )
     batches = iter(
         spatial_batches(records, settings.grid_cell_size, settings.batch_size)
     )
     if settings.batch_workers == 1:
-        _init_worker(settings, rasters)
+        _init_worker(settings, rasters, tiles)
         for batch in batches:
             yield _process(batch)
         return
@@ -129,7 +164,7 @@ def estimate_heights(records, rasters, settings=HeightSettings()):
         max_workers=settings.batch_workers,
         mp_context=multiprocessing.get_context("spawn"),
         initializer=_init_worker,
-        initargs=(settings, rasters),
+        initargs=(settings, rasters, tiles),
     ) as pool:
         pending = set()
         exhausted = False

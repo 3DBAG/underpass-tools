@@ -95,6 +95,43 @@ def test_missing_lidar_produces_explicit_results(tmp_path):
     assert result.candidate_elevation is None
 
 
+@pytest.mark.parametrize("batch_workers", [1, 2])
+def test_caller_owned_catalog(tmp_path, batch_workers):
+    from underpass_tools.heights import TileRecord
+
+    terrain, _ = inputs(tmp_path)
+    records = [
+        UnderpassRecord("B", 1, box(0, 0, 10, 10)),
+        UnderpassRecord("C", 2, box(100, 100, 110, 110)),
+    ]
+    (tmp_path / "second.laz").write_bytes((tmp_path / "cloud.laz").read_bytes())
+    tiles = [
+        TileRecord(tmp_path / "cloud.laz", box(0, 0, 10, 10)),
+        TileRecord(tmp_path / "second.laz", box(0, 0, 10, 10)),
+    ]
+    settings = HeightSettings(batch_workers=batch_workers, pip_workers=1)
+    results = {
+        r.underpass_id: r
+        for batch in estimate_heights(records, [terrain], settings, tiles=tiles)
+        for r in batch
+    }
+    assert results[1].status == "success"
+    assert results[1].point_count == 8000
+    assert results[1].candidate_elevation == pytest.approx(3.3, abs=0.15)
+    assert results[2].status == "no_laz_tiles"
+    assert all(
+        r.status == "no_laz_tiles"
+        for batch in estimate_heights(records, [terrain], settings, tiles=[])
+        for r in batch
+    )
+    settings = HeightSettings(index="unused.gpkg", pointcloud_root=str(tmp_path))
+    with pytest.raises(ValueError, match="not both"):
+        list(estimate_heights(records, [terrain], settings, tiles=tiles))
+    tiles[0].path.unlink()
+    with pytest.raises(FileNotFoundError, match="tile is missing"):
+        list(estimate_heights(records, [terrain], tiles=tiles))
+
+
 def test_unavailable_terrain_never_emits_unfiltered_peak(tmp_path):
     terrain, index = inputs(tmp_path)
     with rasterio.open(terrain, "r+") as ds:

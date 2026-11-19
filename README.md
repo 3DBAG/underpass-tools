@@ -54,3 +54,14 @@ The maximum point count per polygon bounds memory independently of LAZ chunking.
 Roofer performs underpass carving during building reconstruction. This package
 currently provides streetlidar estimates only, including nullable results when measurements are
 unavailable. Run `pytest tests` for portable tests.
+
+## Caller-owned tile catalogs
+
+Version 0.3 adds `estimate_heights(records, rasters, settings, tiles=tiles)`.
+Import `TileRecord` from `underpass_tools.heights` and supply a sequence of
+`TileRecord(path=absolute_path, geometry=footprint)` objects. Point coordinates
+use EPSG:7415 (RD + NAP); footprints use its horizontal component, EPSG:28992.
+The caller can query PostGIS or another catalog before invoking the estimator.
+Workers receive the same snapshot and never connect to that catalog themselves.
+An empty sequence produces explicit `no_laz_tiles` results. Omit `tiles` to use
+the existing GeoPackage settings; supplying both interfaces raises an error.
